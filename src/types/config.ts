@@ -26,6 +26,9 @@ export type SiteConfig = {
 	};
 
 	favicon: Favicon[];
+	waline: {
+		serverURL: string;
+	};
 };
 
 export type Favicon = {

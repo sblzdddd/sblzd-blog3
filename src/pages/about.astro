@@ -5,9 +5,9 @@ import MainGridLayout from "../layouts/MainGridLayout.astro";
 import { getEntry } from "astro:content";
 import { render } from "astro:content";
 import Markdown from "@components/misc/Markdown.astro";
+import Comment from "@components/widget/Comment.astro";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
-
 const aboutPost = await getEntry("spec", "about");
 
 if (!aboutPost) {
@@ -22,6 +22,8 @@ const { Content } = await render(aboutPost);
             <Markdown class="mt-2">
                 <Content />
             </Markdown>
+
+            <Comment />
         </div>
     </div>
 </MainGridLayout>

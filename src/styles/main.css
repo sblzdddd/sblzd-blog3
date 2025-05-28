@@ -155,3 +155,11 @@
 .collapsed {
     height: var(--collapsedHeight);
 }
+
+.dark .wl-reaction-title {
+    color: #f5f5f5;
+}
+
+.dark .wl-count {
+    color: #f5f5f5;
+}

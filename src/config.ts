@@ -36,6 +36,9 @@ export const siteConfig: SiteConfig = {
 		//   sizes: '32x32',              // (Optional) Size of the favicon, set only if you have favicons of different sizes
 		// }
 	],
+	waline: {
+		serverURL: "https://sblzd-blog-waline.vercel.app/",
+	},
 };
 
 export const navBarConfig: NavBarConfig = {

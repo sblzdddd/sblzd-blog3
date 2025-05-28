@@ -1,0 +1,34 @@
+---
+import { siteConfig } from "../../config";
+const walinePath = decodeURIComponent(Astro.url.pathname);
+const serverURL = siteConfig.waline.serverURL;
+---
+
+<div
+  id="waline"
+  data-waline-path={walinePath}
+  data-waline-server={serverURL}
+>
+</div>
+<script>
+  import { init } from '@waline/client'
+	document.addEventListener("astro:page-load", async () => {
+    import("@waline/client/waline.css");
+    import("@waline/client/waline-meta.css");
+    const walineProps = document.getElementById('waline')!.dataset
+    init({
+      el: '#waline',
+      reaction: true,
+      dark: 'html.dark',
+      serverURL: walineProps.walineServer!,
+      path: walineProps.walinePath!,
+      lang: walineProps.walineLanguage!,
+      requiredMeta: ['nick', 'mail'],
+      login: 'enable',
+      emoji: [
+        'https://cdn.jsdelivr.net/gh/walinejs/emojis@1.0.0/tieba',
+        'https://cdn.jsdelivr.net/gh/walinejs/emojis@1.0.0/bilibili',
+      ],
+    })
+  })
+</script>
