@@ -12,7 +12,7 @@ const serverURL = siteConfig.waline.serverURL;
 </div>
 <script>
   import { init } from '@waline/client'
-	document.addEventListener("astro:page-load", async () => {
+  function initWaline() {
     import("@waline/client/waline.css");
     import("@waline/client/waline-meta.css");
     const walineProps = document.getElementById('waline')!.dataset
@@ -30,5 +30,9 @@ const serverURL = siteConfig.waline.serverURL;
         'https://cdn.jsdelivr.net/gh/walinejs/emojis@1.0.0/bilibili',
       ],
     })
+  }
+  initWaline()
+  document.addEventListener("astro:page-load", async () => {
+    initWaline()
   })
 </script>
