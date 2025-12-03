@@ -1,4 +1,5 @@
 ---
+import Analytics from '@vercel/analytics/astro'
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
@@ -51,7 +52,16 @@ let pageTitle: string;
 if (title) {
 	pageTitle = `${title} - ${siteConfig.title}`;
 } else {
-	pageTitle = `${siteConfig.title} - ${siteConfig.subtitle}`;
+	if (siteConfig.subtitle && siteConfig.subtitle.trim() !== "") {
+		pageTitle = `${siteConfig.title} - ${siteConfig.subtitle}`;
+	} else {
+		pageTitle = siteConfig.title;
+	}
+}
+
+// Use siteConfig.description as fallback for meta description when no description is provided
+if (!description) {
+	description = siteConfig.description || pageTitle;
 }
 
 const favicons: Favicon[] =
@@ -81,13 +91,16 @@ const bannerOffset =
 		<title>{pageTitle}</title>
 
 		<meta charset="UTF-8" />
-		<meta name="description" content={description || pageTitle}>
+		<meta name="description" content={description}>
 		<meta name="author" content={profileConfig.name}>
+		{siteConfig.keywords && (
+			<meta name="keywords" content={siteConfig.keywords.join(", ")}>
+		)}
 
 		<meta property="og:site_name" content={siteConfig.title}>
 		<meta property="og:url" content={Astro.url}>
 		<meta property="og:title" content={pageTitle}>
-		<meta property="og:description" content={description || pageTitle}>
+		<meta property="og:description" content={description}>
 		{setOGTypeArticle ? (
         <meta property="og:type" content="article" />
         ) : (
@@ -97,10 +110,14 @@ const bannerOffset =
 		<meta name="twitter:card" content="summary_large_image">
 		<meta property="twitter:url" content={Astro.url}>
 		<meta name="twitter:title" content={pageTitle}>
-		<meta name="twitter:description" content={description || pageTitle}>
+		<meta name="twitter:description" content={description}>
 
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
+		<script src="/js/umami-share.js" defer></script>
+		
+		{/* <!-- Content Security Policy -->
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://giscus.app https://hpic.072103.xyz https://umami.2x.nz https://hm.baidu.com https://www.googletagmanager.com https://www.google-analytics.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://static.cloudflareinsights.com https://*.adtrafficquality.google; style-src 'self' 'unsafe-inline' https://giscus.app https://fonts.googleapis.com https://api.iconify.design; font-src 'self' https://fonts.gstatic.com https://api.iconify.design; img-src 'self' data: https: http:; connect-src 'self' https://umami.2x.nz https://hm.baidu.com https://www.google-analytics.com https://analytics.google.com https://api.iconify.design https://static.cloudflareinsights.com https://pic.2x.nz https://q2.qlogo.cn https://ep1.adtrafficquality.google https://googleads.g.doubleclick.net; frame-src 'self' https://giscus.app *.bilibili.com https://www.google.com https://googleads.g.doubleclick.net https://support.nodeget.com https://*.adtrafficquality.google; object-src 'none'; base-uri 'self'; form-action 'self';"> */}
 		{favicons.map(favicon => (
 			<link rel="icon"
 				  href={favicon.src.startsWith('/') ? url(favicon.src) : favicon.src}
@@ -110,22 +127,28 @@ const bannerOffset =
 		))}
 
 		<!-- Set the theme before the page is rendered to avoid a flash -->
-		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue}}>
-			// Load the theme from local storage
-			const theme = localStorage.getItem('theme') || DEFAULT_THEME;
-			switch (theme) {
-				case LIGHT_MODE:
-					document.documentElement.classList.remove('dark');
-					break
-				case DARK_MODE:
-					document.documentElement.classList.add('dark');
-					break
-				case AUTO_MODE:
-					if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-						document.documentElement.classList.add('dark');
-					} else {
+		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue, forceDarkMode: siteConfig.themeColor.forceDarkMode}}>
+			// Force dark mode if configured
+			if (forceDarkMode) {
+				document.documentElement.classList.add('dark');
+				localStorage.setItem('theme', DARK_MODE);
+			} else {
+				// Load the theme from local storage
+				const theme = localStorage.getItem('theme') || DEFAULT_THEME;
+				switch (theme) {
+					case LIGHT_MODE:
 						document.documentElement.classList.remove('dark');
-					}
+						break
+					case DARK_MODE:
+						document.documentElement.classList.add('dark');
+						break
+					case AUTO_MODE:
+						if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+							document.documentElement.classList.add('dark');
+						} else {
+							document.documentElement.classList.remove('dark');
+						}
+				}
 			}
 
 			// Load the hue from local storage
@@ -136,17 +159,95 @@ const bannerOffset =
 			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
 			offset = offset - offset % 4;
 			document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
+
+			// Background image loading detection
+			const bgUrl = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').trim();
+			const bgEnable = getComputedStyle(document.documentElement).getPropertyValue('--bg-enable').trim();
+			
+			if (bgUrl && bgUrl !== 'none' && bgEnable === '1') {
+				const img = new Image();
+				const urlMatch = bgUrl.match(/url\(["']?([^"')]+)["']?\)/);
+				if (urlMatch) {
+					img.onload = function() {
+						// 背景图片完全加载后，显示背景并启用卡片透明效果
+						document.body.classList.add('bg-loaded');
+						document.documentElement.style.setProperty('--card-bg', 'var(--card-bg-transparent)');
+						document.documentElement.style.setProperty('--float-panel-bg', 'var(--float-panel-bg-transparent)');
+					};
+					img.onerror = function() {
+						// Keep cards opaque if background image fails to load
+						console.warn('Background image failed to load, keeping cards opaque');
+					};
+					img.src = urlMatch[1];
+				}
+			}
 		</script>
 		<style define:vars={{
 			configHue,
 			'page-width': `${PAGE_WIDTH}rem`,
-		}}></style>  <!-- defines global css variables. This will be applied to <html> <body> and some other elements idk why -->
+			'bg-url': siteConfig.background.src ? `url(${siteConfig.background.src})` : 'none',
+			'bg-enable': siteConfig.background.enable ? '1' : '0',
+			'bg-position': siteConfig.background.position || 'center',
+			'bg-size': siteConfig.background.size || 'cover',
+			'bg-repeat': siteConfig.background.repeat || 'no-repeat',
+			'bg-attachment': siteConfig.background.attachment || 'fixed',
+			'bg-opacity': (siteConfig.background.opacity || 0.3).toString()
+		}}>
+			:root {
+				--bg-url: var(--bg-url);
+				--bg-enable: var(--bg-enable);
+				--bg-position: var(--bg-position);
+				--bg-size: var(--bg-size);
+				--bg-repeat: var(--bg-repeat);
+				--bg-attachment: var(--bg-attachment);
+				--bg-opacity: var(--bg-opacity);
+				--light-opacity-factor: 0.75;
+			}
 
+			:root.dark {
+				--light-opacity-factor: 1;
+			}
+			
+			/* Background image configuration */
+			body {
+				--bg-url: var(--bg-url);
+				--bg-enable: var(--bg-enable);
+				--bg-position: var(--bg-position);
+				--bg-size: var(--bg-size);
+				--bg-repeat: var(--bg-repeat);
+				--bg-attachment: var(--bg-attachment);
+				--bg-opacity: var(--bg-opacity);
+			}
+			
+			body::before {
+				content: '' !important;
+				position: fixed !important;
+				top: 0 !important;
+				left: 0 !important;
+				width: 100% !important;
+				height: 100% !important;
+				background-image: var(--bg-url) !important;
+				background-position: var(--bg-position) !important;
+				background-size: var(--bg-size) !important;
+				background-repeat: var(--bg-repeat) !important;
+				background-attachment: var(--bg-attachment) !important;
+				opacity: 0 !important;
+				pointer-events: none !important;
+				z-index: -1 !important;
+				display: block !important;
+				transition: opacity 0.3s ease-in-out !important;
+			}
+			
+			body.bg-loaded::before {
+				opacity: calc(var(--bg-opacity) * var(--bg-enable) * var(--light-opacity-factor)) !important;
+			}
+		</style>  <!-- defines global css variables. This will be applied to <html> <body> and some other elements idk why -->
 
 		<slot name="head"></slot>
 
 		<link rel="alternate" type="application/rss+xml" title={profileConfig.name} href={`${Astro.site}rss.xml`}/>
-
+		<!-- Umami分析（云） -->
+		<script defer src="https://cloud.umami.is/script.js" data-website-id="f1a13523-ad70-4abf-b181-ff56e30e2b70" data-swup-ignore-script></script>
 	</head>
 	<body class=" min-h-screen transition " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
 		  data-overlayscrollbars-initialize
@@ -156,6 +257,8 @@ const bannerOffset =
 
 		<!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
 		<div id="page-height-extend" class="hidden h-[300vh]"></div>
+
+		<Analytics />
 	</body>
 </html>
 
@@ -305,60 +408,14 @@ function initCustomScrollbar() {
 			autoHideSuspend: false,
 		},
 	});
-	const preElements = document.querySelectorAll('pre');
-	preElements.forEach((ele) => {
+	
+	const katexElements = document.querySelectorAll('.katex-display') as NodeListOf<HTMLElement>;
+	katexElements.forEach((ele) => {
 		OverlayScrollbars(ele, {
 			scrollbars: {
-				theme: 'scrollbar-base scrollbar-dark px-2',
-				autoHide: 'leave',
-				autoHideDelay: 500,
-				autoHideSuspend: false
+				theme: 'scrollbar-base scrollbar-auto py-1',
 			}
 		});
-	});
-
-	const katexElements = document.querySelectorAll('.katex-display') as NodeListOf<HTMLElement>;
-
-	const katexObserverOptions = {
-		root: null,
-		rootMargin: '100px',
-		threshold: 0.1
-	};
-
-	const processKatexElement = (element: HTMLElement) => {
-		if (!element.parentNode) return;
-		if (element.hasAttribute('data-scrollbar-initialized')) return;
-		
-		const container = document.createElement('div');
-		container.className = 'katex-display-container';
-		container.setAttribute('aria-label', 'scrollable container for formulas');
-		
-		element.parentNode.insertBefore(container, element);
-		container.appendChild(element);
-		
-		OverlayScrollbars(container, {
-			scrollbars: {
-				theme: 'scrollbar-base scrollbar-auto',
-				autoHide: 'leave',
-				autoHideDelay: 500,
-				autoHideSuspend: false
-			}
-		});
-		
-		element.setAttribute('data-scrollbar-initialized', 'true');
-	};
-
-	const katexObserver = new IntersectionObserver((entries, observer) => {
-		entries.forEach(entry => {
-			if (entry.isIntersecting) {
-			processKatexElement(entry.target as HTMLElement);
-			observer.unobserve(entry.target);
-			}
-		});
-	}, katexObserverOptions);
-
-	katexElements.forEach(element => {
-		katexObserver.observe(element);
 	});
 }
 
@@ -516,55 +573,48 @@ window.onresize = () => {
 </script>
 
 <script>
-import PhotoSwipeLightbox from "photoswipe/lightbox"
-import "photoswipe/style.css"
-
-let lightbox: PhotoSwipeLightbox
-let pswp = import("photoswipe")
-
-function createPhotoSwipe() {
-	lightbox = new PhotoSwipeLightbox({
-		gallery: ".custom-md img, #post-cover img",
-		pswpModule: () => pswp,
-		closeSVG: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ffffff"><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"/></svg>',
-		zoomSVG: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ffffff"><path d="M340-540h-40q-17 0-28.5-11.5T260-580q0-17 11.5-28.5T300-620h40v-40q0-17 11.5-28.5T380-700q17 0 28.5 11.5T420-660v40h40q17 0 28.5 11.5T500-580q0 17-11.5 28.5T460-540h-40v40q0 17-11.5 28.5T380-460q-17 0-28.5-11.5T340-500v-40Zm40 220q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>',
-		padding: { top: 20, bottom: 20, left: 20, right: 20 },
-		wheelToZoom: true,
-		arrowPrev: false,
-		arrowNext: false,
-		imageClickAction: 'close',
-		tapAction: 'close',
-		doubleTapAction: 'zoom',
-	})
-
-	lightbox.addFilter("domItemData", (itemData, element) => {
-		if (element instanceof HTMLImageElement) {
-			itemData.src = element.src
-
-			itemData.w = Number(element.naturalWidth || window.innerWidth)
-			itemData.h = Number(element.naturalHeight || window.innerHeight)
-
-			itemData.msrc = element.src
-		}
-
-		return itemData
-	})
-
-	lightbox.init()
-}
+import { Fancybox } from "@fancyapps/ui"
+import "@fancyapps/ui/dist/fancybox/fancybox.css"
 
 const setup = () => {
-	if (!lightbox) {
-		createPhotoSwipe()
-	}
+	Fancybox.bind(".custom-md img, #post-cover img", {
+		wheel: 'zoom',
+		clickContent: 'close',
+		dblclickContent: 'zoom',
+		click: 'close',
+		dblclick: 'zoom',
+		Panels: {
+			display: ['counter', 'zoom']
+		},
+		Images: {
+			panning: true,
+			zoom: true,
+			protect: false
+		}
+	})
+
 	window.swup.hooks.on("page:view", () => {
-		createPhotoSwipe()
+		Fancybox.bind(".custom-md img, #post-cover img", {
+			wheel: 'zoom',
+			clickContent: 'close',
+			dblclickContent: 'zoom',
+			click: 'close',
+			dblclick: 'zoom',
+			Panels: {
+				display: ['counter', 'zoom']
+			},
+			Images: {
+				panning: true,
+				zoom: true,
+				protect: false
+			}
+		})
 	})
 
 	window.swup.hooks.on(
 		"content:replace",
 		() => {
-			lightbox?.destroy?.()
+			Fancybox.unbind(".custom-md img, #post-cover img")
 		},
 		{ before: true },
 	)

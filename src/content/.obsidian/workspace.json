@@ -1,0 +1,216 @@
+{
+  "main": {
+    "id": "c6989ce27d23c45d",
+    "type": "split",
+    "children": [
+      {
+        "id": "7f06a11af95175a9",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b62fed21b0ee33bd",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "spec/about.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "about"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "adad91cfb262dcee",
+    "type": "split",
+    "children": [
+      {
+        "id": "03f1023b2d857cdc",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7be4ba729d2aae5a",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "5174a9cd87b0f8f9",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "f33d418216a86348",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "f6608acce08382a1",
+    "type": "split",
+    "children": [
+      {
+        "id": "c4b67f4636c6ac01",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a6b54f415fc99d0e",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "posts/obsidian.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "obsidian 的反向链接列表"
+            }
+          },
+          {
+            "id": "630fd596ceed61e1",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "posts/obsidian.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "obsidian 的出链列表"
+            }
+          },
+          {
+            "id": "52896168f27b3092",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "6f2f79f39b3c9de9",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "posts/obsidian.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "obsidian 的大纲"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "b62fed21b0ee33bd",
+  "lastOpenFiles": [
+    "posts/guide/index.md",
+    "posts/zhizishu/index.md",
+    "posts/video.md",
+    "posts/markdown-extended.md",
+    "posts/markdown.md",
+    "posts/zhizishu/Pictures/rnc.png",
+    "posts/zhizishu/Pictures/prototype.png",
+    "posts/zhizishu/Pictures/post.png",
+    "posts/zhizishu/Pictures/geonodes.png",
+    "posts/zhizishu/Pictures/fresnel.png",
+    "posts/zhizishu/Pictures/cover.png",
+    "posts/zhizishu/Pictures/chat2holiday.png",
+    "posts/zhizishu/Pictures/chat.png",
+    "posts/zhizishu/Pictures/ccb.png",
+    "posts/zhizishu/Pictures",
+    "posts/zhizishu",
+    "posts/guide/cover.jpeg",
+    "posts/guide",
+    "posts/duolingo-utau/Pictures",
+    "posts/duolingo-utau/index.md",
+    "posts/duolingo-utau",
+    "posts/phira-mp.md",
+    "posts/163-free-domain-email.md",
+    "posts/paoshoushou.md",
+    "posts/autobangumi.md",
+    "posts/auto-icp-query.md",
+    "posts/alist-for-aliyun.md",
+    "posts/aicode-prompt.md",
+    "posts/asf.md",
+    "posts/manosaba-unzip.md",
+    "posts/whois.md",
+    "posts/zte-f450-bridge.md",
+    "posts/cloudflare-bandwidth-alliance.md",
+    "posts/cf-byoip.md",
+    "posts/pin.md",
+    "posts/anuneko.md",
+    "posts/win11-to-win10.md",
+    "posts/serverless-function.md",
+    "posts/remote.md",
+    "posts/warden-worker.md",
+    "posts/expressive-code.md"
+  ]
+}

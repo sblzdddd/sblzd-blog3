@@ -1,13 +1,16 @@
 import { getCollection } from "astro:content";
-import I18nKey from "@i18n/i18nKey";
-import { i18n } from "@i18n/translation";
+
 
 export async function getSortedPosts() {
 	const allBlogPosts = await getCollection("posts", ({ data }) => {
 		return import.meta.env.PROD ? data.draft !== true : true;
 	});
-
 	const sorted = allBlogPosts.sort((a, b) => {
+		// 如果一个是置顶一个不是置顶，置顶的排在前面
+		if (a.data.pinned !== b.data.pinned) {
+			return a.data.pinned ? -1 : 1;
+		}
+		// 都是置顶或都不是置顶，按发布日期时间排序（包含小时分钟秒）
 		const dateA = new Date(a.data.published);
 		const dateB = new Date(b.data.published);
 		return dateA > dateB ? -1 : 1;
@@ -49,40 +52,4 @@ export async function getTagList(): Promise<Tag[]> {
 	});
 
 	return keys.map((key) => ({ name: key, count: countMap[key] }));
-}
-
-export type Category = {
-	name: string;
-	count: number;
-};
-
-export async function getCategoryList(): Promise<Category[]> {
-	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.draft !== true : true;
-	});
-	const count: { [key: string]: number } = {};
-	allBlogPosts.map((post: { data: { category: string | number } }) => {
-		if (!post.data.category) {
-			const ucKey = i18n(I18nKey.uncategorized);
-			count[ucKey] = count[ucKey] ? count[ucKey] + 1 : 1;
-			return;
-		}
-
-		const categoryName =
-			typeof post.data.category === "string"
-				? post.data.category.trim()
-				: String(post.data.category).trim();
-
-		count[categoryName] = count[categoryName] ? count[categoryName] + 1 : 1;
-	});
-
-	const lst = Object.keys(count).sort((a, b) => {
-		return a.toLowerCase().localeCompare(b.toLowerCase());
-	});
-
-	const ret: Category[] = [];
-	for (const c of lst) {
-		ret.push({ name: c, count: count[c] });
-	}
-	return ret;
 }
