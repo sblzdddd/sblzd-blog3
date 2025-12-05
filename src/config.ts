@@ -118,7 +118,7 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 
 export const gitHubEditConfig: GitHubEditConfig = {
 	enable: true,
-	baseUrl: "https://github.com/sblzdddd/sblzd-blog3/blob/main/src/content/posts",
+	baseUrl: "https://github.com/sblzdddd/sblzd-blog3/blob/master/src/content/posts",
 };
 
 // todoConfig removed from here
