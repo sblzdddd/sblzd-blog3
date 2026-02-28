@@ -95,9 +95,9 @@ export const siteConfig: SiteConfig = {
   favicon: [
     {
       src: "/favicon/icon.png",
-    }
-  ]
-}
+    },
+  ],
+};
 ```
 
 ### 文章格式

@@ -3,30 +3,30 @@ import type { MarkdownHeading } from "astro";
 
 import Profile from "./Profile.astro";
 import Tag from "./Tags.astro";
-import DomainSwitcher from "./DomainSwitcher.astro";
-import Todo from "./Todo.astro";
 import TOC from "./TOC.astro";
+import Todo from "./Todo.astro";
 
 interface Props {
-	class?: string;
-	headings?: MarkdownHeading[];
+  class?: string;
+  headings?: MarkdownHeading[];
 }
 
 const className = Astro.props.class;
 ---
+
 <div id="sidebar" class:list={[className, "w-full"]}>
-    <div class="flex flex-col w-full gap-4 !mb-4">
-        <Profile></Profile>
+  <div class="flex flex-col w-full gap-4 !mb-4">
+    <Profile />
+  </div>
+  <div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-4 top-4 sticky">
+    <!-- <DomainSwitcher class="onload-animation" style="animation-delay: 150ms"></DomainSwitcher> -->
+    <div id="toc" class={`card-base ${Astro.props.headings?.length != 0 ? "pb-4" : "h-0"}`}>
+      <TOC class="onload-animation" headings={Astro.props.headings ?? []} />
     </div>
-    <div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-4 top-4 sticky">
-        <!-- <DomainSwitcher class="onload-animation" style="animation-delay: 150ms"></DomainSwitcher> -->
-        <div id="toc" class={`card-base ${Astro.props.headings?.length != 0 ? "pb-4" : "h-0"}`}>
-            <TOC class="onload-animation" headings={Astro.props.headings ?? []} />
-        </div>
-        <Tag class="onload-animation" style="animation-delay: 200ms"></Tag>
-        <Todo class="onload-animation" style="animation-delay: 250ms"></Todo>
-                    <!-- 赞助标 -->
-        <!-- <div class="overflow-hidden flex justify-center">
+    <Tag class="onload-animation" style="animation-delay: 200ms" />
+    <Todo class="onload-animation" style="animation-delay: 250ms" />
+    <!-- 赞助标 -->
+    <!-- <div class="overflow-hidden flex justify-center">
             <a href="https://secbit.ai/" target="_blank" rel="noopener noreferrer">
                 <img src="/aff/secbit-banner-1.gif" alt="Secbit" class="w-full max-w-[280px] rounded-lg hover:opacity-90 transition-opacity" />
             </a>
@@ -38,7 +38,5 @@ const className = Astro.props.class;
                 transform: scale(1.0); transform-origin: center top;"
             ></iframe>
         </div> -->
-    </div>
+  </div>
 </div>
-
-

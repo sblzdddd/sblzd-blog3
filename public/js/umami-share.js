@@ -1,5 +1,5 @@
 (function (global) {
-  const cacheKey = 'umami-share-cache';
+  const cacheKey = "umami-share-cache";
   const cacheTTL = 3600_000; // 1h
 
   async function fetchShareData(baseUrl, shareId) {
@@ -16,7 +16,7 @@
     }
     const res = await fetch(`${baseUrl}/analytics/us/api/share/${shareId}`);
     if (!res.ok) {
-      throw new Error('获取 Umami 分享信息失败');
+      throw new Error("获取 Umami 分享信息失败");
     }
     const data = await res.json();
     localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), value: data }));
@@ -32,7 +32,7 @@
    */
   global.getUmamiShareData = function (baseUrl, shareId) {
     if (!global.__umamiSharePromise) {
-      global.__umamiSharePromise = fetchShareData(baseUrl, shareId).catch((err) => {
+      global.__umamiSharePromise = fetchShareData(baseUrl, shareId).catch(err => {
         delete global.__umamiSharePromise;
         throw err;
       });
