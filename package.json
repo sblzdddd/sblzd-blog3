@@ -76,10 +76,5 @@
     "postcss-nesting": "^13.0.1",
     "rehype": "^13.0.2"
   },
-  "packageManager": "pnpm@9.14.4",
-  "pnpm": {
-    "patchedDependencies": {
-      "astro": "patches/astro.patch"
-    }
-  }
+  "packageManager": "pnpm@9.14.4"
 }
